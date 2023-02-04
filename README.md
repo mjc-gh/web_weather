@@ -12,10 +12,11 @@ You can see this app in action
 The `/forecast/new` page has a form with a single address input. A user
 enters a location and a new `GeoCoderJob` is enqueued. A unique,
 deterministic Job ID hash is also generated based upon the user's input.
-This Job ID is used as a key for a first level cache layer. It's also
-used to track the user's forecast request state on the backend via
-`Rails.cache`. Using a hash for caching based upon user input means
-the user does not control the length of the cache keys.
+This Job ID is used as a key for a first level cache layer with
+`Rails.cache`. It's also used to track the user's forecast request state
+on the backend while the background jobs process. Using a hash for
+caching based upon user input means the user does not control the length
+of the cache keys.
 
 If the `GeoCoderJob` finds a matching location with a zip code,
 a `ForecastJob` is then enqueued for the given Job ID and returned
@@ -26,12 +27,13 @@ to `:not_found` and error is shown to the user.
 Weather.gov to get the all data needed to display the current
 temperature as well as a 3 day forecast.
 
-Both the `GeoCoderJob` and `ForecastJob` utilize the cache as well. The
+Both the `GeoCoderJob` and `ForecastJob` utilize the cache. The
 `GeoCoderJob` uses a cache key based upon the Job ID. The `ForecastJob`
 uses a cache key based upon the zip code returned by the geocoding
-process along with an timestamp rounded to the nearest half hour. This
+process along with a timestamp rounded to the nearest half hour. This
 ensures forecast requests for the same zip code avoid extra queries to
-the `ForecastService` for a 30 minute period.
+the `ForecastService`. The timestamp ensures we keep forecast data fresh
+even if cache is repeatively hit.
 
 ### `ForecastService`
 
