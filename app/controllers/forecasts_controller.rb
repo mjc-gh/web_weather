@@ -25,7 +25,7 @@ class ForecastsController < ApplicationController
 
     unless @job_status == :pending
       @forecast = Rails.cache.read(cache_key(@job_status, rounded_timestamp.iso8601))
-      @forecast_count = Rails.cache.increment(cache_key(@job_status, :count), expires_in: cache_ttl)
+      @forecast_count = Rails.cache.increment(cache_key(@job_status, :count), expires_in: cache_ttl) if @forecast
     end
 
     render :show
