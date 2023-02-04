@@ -31,3 +31,6 @@
 
 en:
   hello: "Hello world"
+  time:
+    formats:
+      short: "%-m/%-d at %-I:%M %p"

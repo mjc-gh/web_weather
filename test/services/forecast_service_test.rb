@@ -19,6 +19,7 @@ class ForecastServiceTest < ActiveSupport::TestCase
         relative_location: 'Hoboken, NJ',
         cwa: 'OKX',
         time: Time.new(2023, 2, 4, 14, 32, 23),
+        tz: 'America/New_York',
         temperature: 14,
         temperature_unit: 'F',
         periods: [{

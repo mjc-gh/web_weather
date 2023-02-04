@@ -157,7 +157,7 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h2', text: /Hoboken, NJ/
     assert_select 'h2 > a[href=?]', 'https://www.weather.gov/OKX/', text: /OKX/
     assert_select 'h3', text: /Currently\s+14 F/
-    assert_select 'time[datetime]', text: '04 Feb 14:32'
+    assert_select 'time[datetime]', text: '2/4 at 9:32 AM'
     assert_select 'div.grid > div', count: 5
 
     assert_select 'p', text: /from cache/, count: 0
@@ -181,7 +181,7 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h2', text: /Hoboken, NJ/
     assert_select 'h2 > a[href=?]', 'https://www.weather.gov/OKX/', text: /OKX/
     assert_select 'h3', text: /Currently\s+14 F/
-    assert_select 'time[datetime]', text: '04 Feb 14:32'
+    assert_select 'time[datetime]', text: '2/4 at 9:32 AM'
     assert_select 'div.grid > div', count: 5
 
     assert_select 'p', text: /from cache/, count: 0
@@ -193,7 +193,7 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h2', text: /Hoboken, NJ/
     assert_select 'h2 > a[href=?]', 'https://www.weather.gov/OKX/', text: /OKX/
     assert_select 'h3', text: /Currently\s+14 F/
-    assert_select 'time[datetime]', text: '04 Feb 14:32'
+    assert_select 'time[datetime]', text: '2/4 at 9:32 AM'
     assert_select 'div.grid > div', count: 5
 
     assert_select 'p', text: /Served 2 times from cache/

@@ -18,7 +18,7 @@
         </h2>
 
         <time datetime="<%= @forecast[:time].iso8601 -%>" class="text-white text-md">
-          <%= l @forecast[:time], format: :short -%>
+          <%= l @forecast[:time].in_time_zone(@forecast[:tz]), format: :short -%>
         </time>
       </div>
 

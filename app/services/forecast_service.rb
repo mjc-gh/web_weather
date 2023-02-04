@@ -43,6 +43,7 @@ class ForecastService
     { relative_location: "#{rel_loc['city']}, #{rel_loc['state']}",
       cwa: points_resp.body.dig('properties', 'cwa'),
       time: Time.parse(forecast['updateTime']),
+      tz: points_resp.body.dig('properties', 'timeZone'),
       temperature: forecast_hourly['temperature'],
       temperature_unit: forecast_hourly['temperatureUnit'],
       periods: extract_from_periods(forecast) }
