@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ForecastsControllerTest < ActionDispatch::IntegrationTest
   def reset_forecast_cache_for!(zip)
-    redis_client.del WebWeather.cache_key(zip)
+    redis_client.del WebWeather.cache_key(zip, WebWeather.rounded_timestamp.iso8601)
     redis_client.del WebWeather.cache_key(zip, :count)
   end
 
@@ -67,7 +67,9 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_changes -> { Rails.cache.read(WebWeather.cache_key('10017')) }, to: nil do
+    expected_cache_key = WebWeather.cache_key('10017', WebWeather.rounded_timestamp.iso8601)
+
+    assert_changes -> { Rails.cache.read(expected_cache_key) }, to: nil do
       post forecasts_path, params: {
         forecast: { address: address, refresh: '10017' }
       }, as: :turbo_stream

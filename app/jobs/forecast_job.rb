@@ -18,11 +18,10 @@ class ForecastJob < ApplicationJob
 
   private
 
-
-  delegate :cache_key, :cache_ttl, to: 'WebWeather'
+  delegate :cache_key, :cache_ttl, :rounded_timestamp, to: 'WebWeather'
 
   def fetch_forecast(location)
-    Rails.cache.fetch cache_key(location[:zip]), expires_in: cache_ttl do
+    Rails.cache.fetch cache_key(location[:zip], rounded_timestamp.iso8601), expires_in: cache_ttl do
       self.class.service.get(location[:lat_long])
     end
   end

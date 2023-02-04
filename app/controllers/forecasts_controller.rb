@@ -24,7 +24,7 @@ class ForecastsController < ApplicationController
     @job_status = Rails.cache.read(cache_key(@job_id))
 
     unless @job_status == :pending
-      @forecast = Rails.cache.read(cache_key(@job_status))
+      @forecast = Rails.cache.read(cache_key(@job_status, rounded_timestamp.iso8601))
       @forecast_count = Rails.cache.increment(cache_key(@job_status, :count), expires_in: cache_ttl)
     end
 
@@ -33,7 +33,7 @@ class ForecastsController < ApplicationController
 
   private
 
-  delegate :cache_key, :cache_ttl, to: 'WebWeather'
+  delegate :cache_key, :cache_ttl, :rounded_timestamp, to: 'WebWeather'
 
   def forecast_params
     params.require(:forecast).permit(:address, :refresh)

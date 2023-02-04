@@ -35,4 +35,9 @@ module WebWeather
   def self.cache_ttl
     @cache_ttl = Rails.env.test? ? 30.seconds : 30.minutes
   end
+
+  def self.rounded_timestamp
+    now = Time.current.change(sec: 0).round(0)
+    now.change(min: now.min >= 30 ? 30 : 0)
+  end
 end

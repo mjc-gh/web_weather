@@ -34,7 +34,9 @@ class ForecastJobTest < ActiveJob::TestCase
   end
 
   test 'perform sets forecast in cache' do
-    cache_key = WebWeather.cache_key(@forecast.job_id, :forecast)
+    cache_key = WebWeather.cache_key('10017', WebWeather.rounded_timestamp.iso8601)
+
+    redis_client.del cache_key
 
     VCR.use_cassette 'forecast_found' do
       ForecastJob.perform_now(@forecast.job_id, {
@@ -42,6 +44,6 @@ class ForecastJobTest < ActiveJob::TestCase
       })
     end
 
-    assert_instance_of Hash, Rails.cache.read(WebWeather.cache_key('10017'))
+    assert_instance_of Hash, Rails.cache.read(cache_key)
   end
 end

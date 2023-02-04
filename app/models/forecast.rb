@@ -25,10 +25,10 @@ class Forecast
 
   private
 
-  delegate :cache_key, :cache_ttl, to: 'WebWeather'
+  delegate :cache_key, :cache_ttl, :rounded_timestamp, to: 'WebWeather'
 
   def clear_cache!
-    Rails.cache.delete cache_key(refresh)
+    Rails.cache.delete cache_key(refresh, rounded_timestamp.iso8601)
     Rails.cache.delete cache_key(refresh, :count)
   end
 

@@ -58,7 +58,7 @@ class ForecastTest < ActiveJob::TestCase
   end
 
   test 'process! clears cache when refresh is set' do
-    key = WebWeather.cache_key('12345')
+    key = WebWeather.cache_key('12345', WebWeather.rounded_timestamp.iso8601)
 
     Rails.cache.write key, { relative_location: 'Example' }
     Rails.cache.increment WebWeather.cache_key('12345', :count)
