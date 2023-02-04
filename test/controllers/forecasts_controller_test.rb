@@ -3,11 +3,6 @@
 require 'test_helper'
 
 class ForecastsControllerTest < ActionDispatch::IntegrationTest
-  def reset_forecast_cache_for!(zip)
-    redis_client.del WebWeather.cache_key(zip, WebWeather.rounded_timestamp.iso8601)
-    redis_client.del WebWeather.cache_key(zip, :count)
-  end
-
   test 'get root redirects to new' do
     get '/'
 
@@ -81,6 +76,43 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_enqueued_with job: GeoCoderJob, args: [job_id, address]
   end
 
+  test 'post create with expired forecast' do
+    forecast = Forecast.new(address: 'Grand Central Terminal, New York, NY')
+
+    reset_forecast_cache_for! '10017'
+
+    VCR.use_cassette 'forecast_controller' do
+      perform_enqueued_jobs { forecast.process! }
+    end
+
+    3.times { Rails.cache.increment WebWeather.cache_key('10017', :count) }
+
+    travel_to 1.hour.from_now do
+      VCR.use_cassette 'forecast_controller' do
+        perform_enqueued_jobs do
+          post forecasts_path, params: {
+            forecast: { address: forecast.address }
+          }, as: :turbo_stream
+        end
+      end
+
+      follow_redirect!
+
+      assert_response :success
+
+      assert_select 'h2', text: /Hoboken, NJ/
+      assert_select 'p', text: /from cache/, count: 0
+
+      redis_keys = redis_client.keys('ww:test:10017:*')
+
+      assert_includes redis_keys,
+        WebWeather.cache_key('10017', WebWeather.rounded_timestamp.iso8601)
+
+      assert_includes redis_keys,
+        WebWeather.cache_key('10017', (WebWeather.rounded_timestamp - 1.hour).iso8601)
+    end
+  end
+
   test 'get show with pending forecast job' do
     forecast = Forecast.new(address: 'Grand Central Terminal, New York, NY')
     forecast.process!
@@ -128,7 +160,7 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'time[datetime]', text: '04 Feb 14:32'
     assert_select 'div.grid > div', count: 5
 
-    assert_select 'p', text: /times from cache/, count: 0
+    assert_select 'p', text: /from cache/, count: 0
   end
 
   test 'get show with completed forecast job increments counter cache' do
@@ -152,7 +184,7 @@ class ForecastsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'time[datetime]', text: '04 Feb 14:32'
     assert_select 'div.grid > div', count: 5
 
-    assert_select 'p', text: /served from cache/, count: 0
+    assert_select 'p', text: /from cache/, count: 0
 
     get forecast_path(id: forecast.job_id)
 

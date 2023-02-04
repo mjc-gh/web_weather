@@ -22,6 +22,8 @@ class ForecastJob < ApplicationJob
 
   def fetch_forecast(location)
     Rails.cache.fetch cache_key(location[:zip], rounded_timestamp.iso8601), expires_in: cache_ttl do
+      Rails.cache.delete cache_key(location[:zip], :count)
+
       self.class.service.get(location[:lat_long])
     end
   end

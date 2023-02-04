@@ -30,6 +30,11 @@ class ActiveSupport::TestCase
   def redis_client
     @redis_client ||= Redis.new
   end
+
+  def reset_forecast_cache_for!(zip)
+    redis_client.del WebWeather.cache_key(zip, WebWeather.rounded_timestamp.iso8601)
+    redis_client.del WebWeather.cache_key(zip, :count)
+  end
 end
 
 Minitest.after_run do
