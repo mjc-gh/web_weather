@@ -1,4 +1,4 @@
-<%= form_with model: forecast, url: forecasts_path, class: 'flex gap-4 justify-between', id: 'forecast-new-form' do |form| -%>
+<%= form_with model: forecast, url: forecasts_path, class: 'px-2 flex flex-col gap-4 justify-between md:flex-row', id: 'forecast-new-form' do |form| -%>
   <%= form.text_field :address, placeholder: 'Enter an address or zip code...',
     class: 'flex-1 rounded-md focus:border-green-900 focus:outline-none focus:ring-2 focus:ring-green-700' -%>
 
