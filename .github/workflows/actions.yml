@@ -1,0 +1,72 @@
+name: Web Weather CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - '6379:6379'
+
+    env:
+      RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby 3
+      uses: ruby/setup-ruby@v1
+
+    - name: Get Yarn Cache
+      id: yarn-cache
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - name: Cache Node Modules
+      id: node-modules-cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.yarn-cache.outputs.dir }}
+        key: ${{ runner.os }}-yarn-v2-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-v2-
+
+    - name: Cache Gems
+      id: gem-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-v2-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-v2-
+
+    - name: Cache Assets
+      id: assets-cache
+      uses: actions/cache@v2
+      with:
+        path: public/packs-test
+        key: ${{ runner.os }}-packs-${{ steps.extract_branch.outputs.branch }}
+        restore-keys: |
+          ${{ runner.os }}-packs-
+
+    - name: Bundle Install
+      run: |
+        bundle config set --local path 'vendor/bundle'
+        bundle install --jobs 4 --retry 3
+
+    - name: Yarn Install
+      run: bin/rails yarn:install
+
+    - name: Compile Assets
+      shell: bash
+      run: bin/rails webpacker:compile
+
+    - name: Run rails tests
+      run: bin/rails test
+
+    - name: Run rubocop checks
+      run: bundle exec rubocop --config .rubocop.yml

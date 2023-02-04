@@ -1,0 +1,15 @@
+<%= form_with model: forecast, url: forecasts_path, class: 'flex gap-4 justify-between', id: 'forecast-new-form' do |form| -%>
+  <%= form.text_field :address, placeholder: 'Enter an address or zip code...',
+    class: 'flex-1 rounded-md focus:border-green-900 focus:outline-none focus:ring-2 focus:ring-green-700' -%>
+
+  <%= form.button 'Get Forecast',
+    class: 'border-2 border-green-900 px-4 py-2 text-lg text-gray-300 rounded-md hover:text-white hover:bg-green-700/20 active:bg-green-800/20' -%>
+<% end -%>
+
+<% if forecast.errors.any? -%>
+  <div class="text-red-400 font-bold text-md space-y-2">
+    <% forecast.errors.full_messages.each do |msg| %>
+      <p><%= msg %></p>
+    <% end %>
+  </div>
+<% end -%>

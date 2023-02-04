@@ -1,0 +1,5 @@
+<div class="py-10">
+  <%= turbo_frame_tag 'forecast' do -%>
+    <%= render 'forecasts/form', forecast: @forecast -%>
+  <% end -%>
+</div>

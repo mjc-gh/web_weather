@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: "3.7"
+
+services:
+  redis:
+    container_name: web-weather-redis
+    image: redis:6.2
+    ports:
+      - "127.0.0.1:6379:6379"
+    security_opt:
+      - apparmor:snap.docker.dockerd
