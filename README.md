@@ -4,6 +4,9 @@ This app uses [Weather.gov](https://www.weather.gov/) and
 [Geoapify](https://www.geoapify.com/) to retrieve current temperature
 and forecast data from the National Weather Service.
 
+You can see this app in action
+[here on Heroku](https://web-weather.herokuapp.com/).
+
 ## How it works
 
 The `/forecast/new` page has a form with a single address input. A user
