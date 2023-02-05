@@ -16,7 +16,7 @@ module WebWeather
 
     # Use redis with rails cache
     config.cache_store = :redis_cache_store, {
-      url: ENV.fetch('REDIS_URL', 'redis://127.0.0.1:6379'), pool_size: 5, pool_timeout: 1
+      url: ENV.fetch('REDIS_URL', 'redis://127.0.0.1:6379'), pool_size: 5, pool_timeout: 4
     }
 
     # Configuration for the application, engines, and railties goes here.
